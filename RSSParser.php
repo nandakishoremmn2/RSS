@@ -14,7 +14,7 @@ class RSSParser {
 	protected $lastModified;
 	protected $xml;
 	protected $error;
-	protected $displayFields = array( 'author', 'title', 'encodedContent', 'description' );
+	protected $displayFields = array( 'author', 'title', 'content', 'content' );
 
 	/**
 	 * @var RSSData
@@ -279,12 +279,15 @@ class RSSParser {
 		}
 
 		$fetch = $client->execute();
+		// var_dump($client);
+		// var_dump($fetch);
 		$this->client = $client;
 
-		if ( !$fetch->isGood() ) {
-			wfDebug( 'RSS', 'Request Failed: ' . $fetch->getWikiText() );
-			return $fetch;
-		}
+		// if ( !$fetch->isGood() ) {
+		// 	wfDebug( 'RSS', 'Request Failed: ' . $fetch->getWikiText() );
+		// 	echo file_get_contents('https://www.google.co.in/alerts/feeds/12823447356526879708/5480545149413868764');
+		// 	return $fetch;
+		// }
 
 		$ret = $this->responseToXML( $key );
 		return $ret;
@@ -509,6 +512,9 @@ class RSSParser {
 		} else {
 			$this->xml = new DOMDocument;
 			$raw_xml = $this->client->getContent();
+			if ( $raw_xml == '' ) {
+				$raw_xml = file_get_contents($this->url);
+			}
 
 			if( $raw_xml == '' ) {
 				return Status::newFatal( 'rss-parse-error', 'No XML content' );

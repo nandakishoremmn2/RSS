@@ -32,7 +32,7 @@ class RSSData {
 			$bit = array();
 			foreach ( $item->childNodes as $n ) {
 				$name = $this->rssTokenToName( $n->nodeName );
-				if ( $name != null ) {
+				if ( $name != null and $name != 'id') {
 					/**
 					 * Because for DOMElements the nodeValue is just
 					 * the text of the containing element, without any
@@ -41,7 +41,14 @@ class RSSData {
 					 * mark up their RSS, some more precautions are
 					 * needed.
 					 */
-					$bit[$name] = trim( $n->nodeValue );
+					if( $name == 'link' && ( $n->nodeValue == null || $n->nodeValue == '' ) )
+					{
+						$bit[$name] = trim( $n->getAttribute('href') );
+					}
+					else
+					{
+						$bit[$name] = trim( $n->nodeValue );
+					}
 				}
 			}
 			$this->items[] = $bit;
@@ -62,11 +69,11 @@ class RSSData {
 
 		$tokenNames = array(
 			'dc:date' => 'date',
-			'pubDate' => 'date',
-			'updated' => 'date',
+			'published' => 'date',
+			'upda' => 'date',
 			'dc:creator' => 'author',
-			'summary' => 'description',
-			'content:encoded' => 'encodedContent',
+			'content' => 'description',
+			'content:encoded' => 'content',
 			'category' => null,
 			'comments' => null,
 			'feedburner:origLink' => null,
